@@ -69,7 +69,18 @@ body {
   padding: 0;
   text-align: center;
   width: 34px;
+
 }
+
+.square--winner {
+  background-color: lightgreen;
+}
+
+/* .square:nth-child(3n) {
+  clear: both;
+  content: '';
+  display: table;
+} */
 
 .board-row:after {
   clear: both;
