@@ -28,8 +28,6 @@ function Square({
       className={classes}
       data-class={customClass}
       onClick={onSquareClick}
-      data-col={col}
-      data-row={row}
     >
       {value}
     </button>
@@ -48,14 +46,14 @@ function Board({ xIsNext, squares, highlightSquares, onPlay }) {
     status = xIsNext ? `Next: X` : `Next 0`;
   }
 
-  function handleClick(i) {
+  function handleClick(i, col, row) {
     if (squares[i] || calculateWinner(squares)) {
       return;
     }
 
     const nextSquares = squares.slice();
     nextSquares[i] = xIsNext ? "X" : "0";
-    onPlay(nextSquares);
+    onPlay(nextSquares, col, row);
   }
 
   const renderBoard = () => {
@@ -71,12 +69,10 @@ function Board({ xIsNext, squares, highlightSquares, onPlay }) {
 
         renderedSquares.push(
           <Square
-            col={j + 1}
-            row={i + 1}
             key={index}
             value={squares[index]}
             highlightSquare={highlightSquares[index]}
-            onSquareClick={() => handleClick(index)}
+            onSquareClick={() => handleClick(index, j + 1, i + 1)}
           />
         );
       }
@@ -108,9 +104,13 @@ export default function Game() {
   const currentSquares = history[currentMove];
   const xIsNext = currentMove % 2 === 0;
 
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares, col, row) {
     const nexStory = [...history.slice(0, currentMove + 1), nextSquares];
+    const nextLocation = [...locationSquares];
+    nextLocation[currentMove] = { col: col, row: row };
+
     setHistory(nexStory);
+    setlocationSquares(nextLocation);
     setCurrentMove(nexStory.length - 1);
 
     handleHighlightedSquares(nextSquares);
@@ -141,10 +141,11 @@ export default function Game() {
       moveTemplate = `You are at move #${move}`;
     } else {
       let buttonDescription;
+      const { col, row } = locationSquares[move];
       if (move > 0) {
-        buttonDescription = `Go to move #${move}`;
+        buttonDescription = `Go to move #${move} ----- Column ${col} | Row ${row}`;
       } else {
-        buttonDescription = "Go to Game Start";
+        buttonDescription = `Go to Game Start - Column ${col} | Row ${row}`;
       }
       moveTemplate = (
         <button onClick={() => jumpTo(move)}>{buttonDescription}</button>
